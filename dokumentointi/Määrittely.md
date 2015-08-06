@@ -8,4 +8,13 @@ Toteutusta on tarkoitus pystyä käyttämään kokeellisesti paikalliselta konee
 
 Käyttäjinä ovat toteutettua salaus- tai pakkausalgoritmia tarvitsevat projektit joita ei kuitenkaan tehtävän luonti hetkellä ole tiedossa.
 
+## Salaus
 
+Ensimmäinen toteutus on [DES (Data encryption standard)](https://en.wikipedia.org/wiki/Data_Encryption_Standard). Algoritmin ydin, des funktio,
+tekee joukon vakioaikaisia operaatiota alussa ja lopussa sekä välissä kiinteän lukumäärän kierroksia kuten standardi määrittää. Tämä funktio käsittelee vain kahdeksan tavua kerrallaan, ei siis koko viestiä. Sekä encryptBlock että decryptBlock käyttävät tätä funktiota toimintansa ytimessä. Apufunktio, encrypt ja decrypt, salaavat tai purkavat annetun tavujonon kokonaisuudessaan.
+
+Apufunktioiden, encrypt ja decrypt, aikavaatimus on siis viestin pituus, m, eli O(m). Varsinainen ydinkfunktio, des, voidaan ajatella toimivan vakioajassa eli O(1).
+
+Apufunktiot, encrypt ja decrypt, käyttävät annetun tavujonon, m, sekä apuna käytettävien samankokoisen tavujonojen verran tilaa eli O(3m).
+
+Muut apufunktiot käyttävät pienempiä osuuksia aikaa tai tilaa. Esimerkiksi padding ja byte-int-byte muunnokset käsittelevät vain kahdeksaa tavua kerrallaan tehden vakioaikaisia toimintoja. Avaimen luonti merkkijonosta käyttää avaimen pituuden, ap, verran aikaa eli O(ap) ja tilaa vain kiinteän mittaisen avaimen verran eli kahdeksan tavua. DES:n osa-avainten luonnissa käydään kiinteä, standardin mukainen kierroksmäärä läpi jonka aikavaatimus on siis kierrosten lukumäärä kertaa kiinteä avaimen pituus. Muistinkulutus on kiinteä avaimen sekä apurakenteiden pituus ja jossa apurakenteiden pituudet ovat vakiot.
