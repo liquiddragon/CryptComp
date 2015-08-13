@@ -1,15 +1,25 @@
 package crypto;
 
 import java.lang.reflect.Field;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.ShortBufferException;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+/**
+ * DES class related tests.
+ */
 public class DESTest {
 
     private DES des;
-
-    public DESTest() {
-    }
 
     /**
      * DES string constructor test.
@@ -92,10 +102,10 @@ public class DESTest {
     }
 
     /**
-     * DES encrypt and decrypt with short message.
+     * DES encrypt and decrypt with short message using CBC.
      */
     @Test
-    public void testDESEncDecShortMessage() {
+    public void testDESCBCEncDecShortMessage() {
         String key = "TheLongerKey";
         des = new DES(key);
 
@@ -107,17 +117,31 @@ public class DESTest {
     }
 
     /**
-     * DES encrypt and decrypt with long message.
+     * DES encrypt and decrypt with long message using CBC.
      */
     @Test
-    public void testDESEncDecLongMessage() {
+    public void testDESCBCEncDecLongMessage() {
         String key = "TheDoubleLongKey";
         des = new DES(key);
 
         byte[] clearText = "This is a longer test message.:)".getBytes();
         byte[] cipherText = des.encrypt(clearText);
         byte[] clearedText = des.decrypt(cipherText);
+        assertArrayEquals(clearText, clearedText);
+    }
 
+    /**
+     * DES encrypt and decrypt with message using ECB.
+     */
+    @Test
+    public void testDESECBEncDecLongMessage() {
+        String key = "SurpriseKey!";
+        des = new DES(key);
+        des.setOperationMode(DES.OperationMode.ECB);
+
+        byte[] clearText = "This is a repeating test message. This is a repeating test message".getBytes();
+        byte[] cipherText = des.encrypt(clearText);
+        byte[] clearedText = des.decrypt(cipherText);
         assertArrayEquals(clearText, clearedText);
     }
 
@@ -131,6 +155,47 @@ public class DESTest {
 
         byte[] clearText = des.decrypt("Dummy".getBytes());
         assertNull(clearText);
+    }
+
+    /**
+     * Test custom implementation against Java provided.
+     */
+    @Test
+    public void testAgainstJavaDES() {
+        String password = "password";
+        String input = "This is a secret message.";
+        byte[] passwordInBytes = password.getBytes();
+        byte[] inputInBytes = input.getBytes();
+        byte[] ivBytes = new byte[]{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+
+        // Create encrypted and decrypted text using custom implementation of DES
+        des = new DES(passwordInBytes);
+        byte[] cipherText = des.encrypt(inputInBytes);
+        byte[] clearText = des.decrypt(cipherText);
+
+        // Create same with Java provided utilities
+        SecretKeySpec key = new SecretKeySpec(passwordInBytes, "DES");
+        IvParameterSpec ivSpec = new IvParameterSpec(ivBytes);
+        try {
+            Cipher cipher = Cipher.getInstance("DES/CBC/PKCS5Padding");
+            cipher.init(Cipher.ENCRYPT_MODE, key, ivSpec);
+            byte[] encr = new byte[32];
+            int ctLen = cipher.update(inputInBytes, 0, inputInBytes.length, encr, 0);
+            ctLen += cipher.doFinal(encr, ctLen);
+
+            // Verify encrypted text
+            assertArrayEquals(encr, cipherText);
+
+            cipher.init(Cipher.DECRYPT_MODE, key, ivSpec);
+            byte[] decrypt = new byte[25];
+            int ptLen = cipher.update(encr, 0, ctLen, decrypt, 0);
+            ptLen += cipher.doFinal(decrypt, ptLen);
+
+            // Verify decrypted text
+            assertArrayEquals(decrypt, clearText);
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | InvalidAlgorithmParameterException | ShortBufferException | IllegalBlockSizeException | BadPaddingException ex) {
+            System.out.println("Error: " + ex.getMessage());
+        }
     }
 
     /**

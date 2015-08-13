@@ -26,22 +26,18 @@ public class CmdLineParser {
          * Encrypt input.
          */
         ENC("enc"),
-        
         /**
          * Decrypt input.
          */
         DEC("dec"),
-        
         /**
          * Key used for en/decryption.
          */
         KEY("key"),
-        
         /**
          * Input file or STDIN if missing.
          */
         INFILE("infile"),
-        
         /**
          * Output file or STDOUT if missing.
          */

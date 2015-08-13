@@ -15,11 +15,11 @@ import java.util.Arrays;
 /**
  * Main class for simple CLI.
  */
-public class Main { 
+public class Main {
 
     /**
      * Standard starting function for the application.
-     * 
+     *
      * @param args command line
      */
     public static void main(String[] args) {
@@ -128,7 +128,7 @@ public class Main {
 
     /**
      * Encrypt input stream to output stream using given key.
-     * 
+     *
      * @param key for encryption
      * @param bis input stream being encrypted
      * @param bos output stream where encrypted stream is written
@@ -151,7 +151,7 @@ public class Main {
 
     /**
      * Decrypt input stream to output stream using given key.
-     * 
+     *
      * @param key for decryption
      * @param bis input stream being decrypted
      * @param bos output stream where decrypted stream is written

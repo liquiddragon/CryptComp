@@ -46,9 +46,13 @@
                 <configuration>
                     <targetClasses>
                         <param>crypto.*</param>
+                        <param>compression.*</param>
+                        <param>utility.*</param>
                     </targetClasses>
                     <targetTests>
                         <param>crypto.*</param>
+                        <param>compression.*</param>
+                        <param>utility.*</param>
                     </targetTests>
                 </configuration>            
             </plugin>

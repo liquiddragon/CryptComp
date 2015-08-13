@@ -19,6 +19,7 @@ public class DES {
     private final int[] tempInts = new int[2];
     private byte[] copyOfInput = new byte[blockSize];
     private boolean skipDone = false;
+    private OperationMode opMode;
 
     /**
      * DES operation mode.
@@ -42,6 +43,7 @@ public class DES {
      * @param keyStr key to be used
      */
     public DES(String keyStr) {
+        opMode = OperationMode.CBC;
         byte[] key = strToByteKey(keyStr);
         setKey(key);
     }
@@ -53,6 +55,7 @@ public class DES {
      * @param key key to be used
      */
     public DES(byte[] key) {
+        opMode = OperationMode.CBC;
         setKey(key);
     }
 
@@ -72,7 +75,7 @@ public class DES {
         byte[] cipherText = new byte[length];
 
         for (int i = 0; i < count; i++) {
-            encryptBlock(clearTextWithPadding, i * blockSize, cipherText, i * blockSize, OperationMode.ECB);
+            encryptBlock(clearTextWithPadding, i * blockSize, cipherText, i * blockSize, opMode);
         }
 
         return cipherText;
@@ -97,7 +100,7 @@ public class DES {
 
         int count = length / blockSize;
         for (int i = 0; i < count; i++) {
-            decryptBlock(cipherText, i * blockSize, clearText, i * blockSize, OperationMode.ECB);
+            decryptBlock(cipherText, i * blockSize, clearText, i * blockSize, opMode);
         }
 
         byte[] clearTextWithouPadding = removePadding(clearText);
@@ -126,7 +129,7 @@ public class DES {
         spreadIntsToBytes(tempInts, 0, cipherText, cipherOff, 2);
 
         if (opMode == OperationMode.CBC) {
-            copyOfInput = Arrays.copyOf(cipherText, cipherText.length);
+            copyOfInput = Arrays.copyOfRange(cipherText, cipherOff, cipherOff + blockSize);
         }
     }
 
@@ -140,32 +143,25 @@ public class DES {
      * @param opMode operation mode of decrypt
      */
     public void decryptBlock(byte[] cipherText, int cipherOff, byte[] clearText, int clearOff, OperationMode opMode) {
-        boolean skipFirst = false;
+        byte[] backup = new byte[blockSize];
 
         if (opMode == OperationMode.CBC) {
-            if (skipDone == false) {
-                int count = 0;
-                for (int i = 0; i < blockSize; i++) {
-                    if (copyOfInput[i] == 0) {
-                        count++;
-                    }
-                }
-                if (count == blockSize) {
-                    skipFirst = true;
-                    skipDone = true;
-                }
+            if (skipDone == true) {
+                backup = Arrays.copyOf(copyOfInput, copyOfInput.length);
             }
-            copyOfInput = Arrays.copyOf(cipherText, cipherText.length);
+            copyOfInput = Arrays.copyOfRange(cipherText, cipherOff, cipherOff + blockSize);
         }
 
         squashBytesToInts(cipherText, cipherOff, tempInts, 0, 2);
         des(tempInts, tempInts, decryptKeys);
         spreadIntsToBytes(tempInts, 0, clearText, clearOff, 2);
 
-        if (opMode == OperationMode.CBC && skipFirst == false) {
+        if (opMode == OperationMode.CBC && skipDone == true) {
             for (int i = 0; i < blockSize; i++) {
-                clearText[clearOff + i] ^= copyOfInput[i];
+                clearText[clearOff + i] ^= backup[i];
             }
+        } else {
+            skipDone = true;
         }
     }
 
@@ -216,6 +212,16 @@ public class DES {
      */
     public void initBlockCrypter() {
         Arrays.fill(copyOfInput, (byte) 0);
+        skipDone = false;
+    }
+
+    /**
+     * Set en/decrypt operation mode.
+     *
+     * @param opMode desired operation mode
+     */
+    public void setOperationMode(OperationMode opMode) {
+        this.opMode = opMode;
     }
 
     /**

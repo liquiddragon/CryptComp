@@ -1,0 +1,4 @@
+/**
+ * Compression classes.
+ */
+package compression;
