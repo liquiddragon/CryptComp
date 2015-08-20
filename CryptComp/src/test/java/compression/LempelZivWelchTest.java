@@ -1,7 +1,5 @@
 package compression;
 
-import java.util.Arrays;
-import javax.crypto.spec.SecretKeySpec;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import utility.CCList;
@@ -21,6 +19,8 @@ public class LempelZivWelchTest {
         lz = new LempelZivWelch();
 
         String inputText = "ABBABBBABBA";
+        int[] inputTable = stringToIntTable(inputText);
+
         CCList<Integer> expectedOutput = new CCList<>();
         expectedOutput.add(65);
         expectedOutput.add(66);
@@ -30,11 +30,9 @@ public class LempelZivWelchTest {
         expectedOutput.add(259);
         expectedOutput.add(65);
 
-        CCList<Integer> compressed = lz.compress(inputText);
+        CCList<Integer> compressed = lz.compress(inputTable);
 
-        for (int i = 0; i < expectedOutput.getSize(); i++) {
-            assertEquals(expectedOutput.get(i), compressed.get(i));
-        }
+        verifyCCLists(expectedOutput, compressed);
     }
 
     /**
@@ -44,7 +42,9 @@ public class LempelZivWelchTest {
     public void testDecompress() {
         lz = new LempelZivWelch();
 
-        String expectedOutput = "ABBABBBABBA";
+        String expected = "ABBABBBABBA";
+        int[] expectedOutput = stringToIntTable(expected);
+
         CCList<Integer> input = new CCList<>();
         input.add(65);
         input.add(66);
@@ -54,9 +54,9 @@ public class LempelZivWelchTest {
         input.add(259);
         input.add(65);
 
-        String decompressed = lz.decompress(input);
+        int[] decompressed = lz.decompress(input);
 
-        assertEquals(expectedOutput, decompressed);
+        verifyTables(expectedOutput, decompressed);
     }
 
     /**
@@ -67,10 +67,11 @@ public class LempelZivWelchTest {
         lz = new LempelZivWelch();
 
         String input = "This is a test message that might or might not compress.";
-        CCList<Integer> compressed = lz.compress(input);
-        String output = lz.decompress(compressed);
+        int[] inputTable = stringToIntTable(input);
+        CCList<Integer> compressed = lz.compress(inputTable);
+        int[] output = lz.decompress(compressed);
 
-        assertEquals(input, output);
+        verifyTables(inputTable, output);
     }
 
     /**
@@ -80,7 +81,9 @@ public class LempelZivWelchTest {
     public void testDecompressUnexpectedValue() {
         lz = new LempelZivWelch();
 
-        String expectedOutput = "AAABAAAABAAAA";
+        String expected = "AAABAAAABAAAA";
+        int[] expectedOutput = stringToIntTable(expected);
+
         CCList<Integer> input = new CCList<>();
         input.add(65);
         input.add(256);
@@ -90,9 +93,9 @@ public class LempelZivWelchTest {
         input.add(259);
         input.add(65);
 
-        String decompressed = lz.decompress(input);
+        int[] decompressed = lz.decompress(input);
 
-        assertEquals(expectedOutput, decompressed);
+        verifyTables(expectedOutput, decompressed);
     }
 
     /**
@@ -104,8 +107,54 @@ public class LempelZivWelchTest {
 
         String inputText = "";
 
-        CCList<Integer> compressed = lz.compress(inputText);
+        CCList<Integer> compressed = lz.compress(stringToIntTable(inputText));
 
         assertEquals(0, compressed.getSize());
+    }
+
+    /**
+     * Helper method converting string to corresponding int table.
+     *
+     * @param inputText to be converted
+     * @return text in int table
+     */
+    private int[] stringToIntTable(String inputText) {
+        int[] inputTable = new int[inputText.length()];
+
+        for (int i = 0; i < inputText.length(); i++) {
+            inputTable[i] = inputText.charAt(i);
+        }
+
+        return inputTable;
+    }
+
+    /**
+     * Helper method for verifying if two int tables are equal in size and in
+     * contents.
+     *
+     * @param expected source being compared to
+     * @param result that is compared
+     */
+    private void verifyTables(int[] expected, int[] result) {
+        assertEquals(expected.length, result.length);
+
+        for (int i = 0; i < expected.length; i++) {
+            assertEquals(expected[i], result[i]);
+        }
+    }
+
+    /**
+     * Helper method for verifying if two lists are equal in size and in
+     * contents.
+     *
+     * @param expected source being compared to
+     * @param result that is compared
+     */
+    private void verifyCCLists(CCList<Integer> expected, CCList<Integer> result) {
+        assertEquals(expected.getSize(), result.getSize());
+
+        for (int i = 0; i < result.getSize(); i++) {
+            assertEquals(expected.get(i), result.get(i));
+        }
     }
 }

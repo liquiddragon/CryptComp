@@ -11,13 +11,29 @@ public class CCList<E> implements Iterable<E> {
 
     private int size = 0;
     private final int DEFAULT_CAPACITY = 10;
-    private Object elements[];
+    private Object[] elements;
 
     /**
      * Construct new list collection.
      */
     public CCList() {
         elements = new Object[DEFAULT_CAPACITY];
+    }
+
+    /**
+     * Construct new list collection based on existing collection.
+     *
+     * @param copy collection that is copied
+     */
+    public CCList(CCList<E> copy) {
+        int newSize = copy.size;
+        newSize = newSize == 0 ? DEFAULT_CAPACITY : newSize;
+        elements = new Object[newSize];
+
+        for (int i = 0; i < copy.size; i++) {
+            elements[i] = copy.elements[i];
+            size++;
+        }
     }
 
     /**
@@ -31,6 +47,17 @@ public class CCList<E> implements Iterable<E> {
         }
 
         elements[size++] = entry;
+    }
+
+    /**
+     * Add collection of entries to this collection.
+     *
+     * @param entries to be added to this collection
+     */
+    public void add(CCList<E> entries) {
+        for (int i = 0; i < entries.size; i++) {
+            this.add(entries.get(i));
+        }
     }
 
     /**
@@ -65,6 +92,14 @@ public class CCList<E> implements Iterable<E> {
     }
 
     /**
+     * Remove all elements from the collection.
+     */
+    public void removeAll() {
+        elements = new Object[size];
+        size = 0;
+    }
+
+    /**
      * Number of entries in collection.
      *
      * @return collection current size
@@ -74,19 +109,30 @@ public class CCList<E> implements Iterable<E> {
     }
 
     /**
+     * Reverse this collection elements.
+     */
+    public void reverse() {
+        Object[] temp = new Object[size];
+
+        for (int i = size - 1; i >= 0; i--) {
+            temp[size - i - 1] = elements[i];
+        }
+
+        elements = temp;
+    }
+
+    /**
      * Check that collection capacity is sufficient for new entry and increase
      * it if necessary.
      */
     private void ensureCapacity() {
-        if (size == elements.length) {
-            int newSize = elements.length << 1;
+        int newSize = elements.length << 1;
 
-            Object[] newValues = new Object[newSize];
-            for (int i = 0; i < elements.length; i++) {
-                newValues[i] = elements[i];
-            }
-            elements = newValues;
+        Object[] newValues = new Object[newSize];
+        for (int i = 0; i < elements.length; i++) {
+            newValues[i] = elements[i];
         }
+        elements = newValues;
     }
 
     /**
@@ -127,7 +173,7 @@ public class CCList<E> implements Iterable<E> {
          */
         @Override
         public boolean hasNext() {
-            return elements[currentPos]!=null;
+            return elements[currentPos] != null;
         }
 
         /**

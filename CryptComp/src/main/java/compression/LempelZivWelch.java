@@ -1,7 +1,7 @@
 package compression;
 
 import utility.CCList;
-import utility.CCMap;
+import utility.CCTrie;
 
 /**
  * Simple Lempel-Ziv-Welch (LZW) compression algorithm. See
@@ -15,31 +15,31 @@ public class LempelZivWelch {
     /**
      * Compress given input using ASCII values as default dictionary.
      *
-     * @param uncompressed input
+     * @param uncompressed input in clear
      * @return list of integers forming compress output
      */
-    public CCList<Integer> compress(String uncompressed) {
-        int dictionarySize = initialDictionarySize;
-        CCMap<String, Integer> dictionary = new CCMap<>();
-        for (int i = 0; i < dictionarySize; i++) {
-            dictionary.put("" + (char) i, i);
-        }
-
-        String w = "";
+    public CCList<Integer> compress(int[] uncompressed) {
         CCList<Integer> result = new CCList<>();
 
-        for (char c : uncompressed.toCharArray()) {
-            String wc = w + c;
-            if (dictionary.containsKey(wc)) {
+        CCTrie dictionary = createBaseDictionary();
+
+        CCList<Integer> w = new CCList<>();
+        for (int c : uncompressed) {
+            CCList<Integer> wc = new CCList<>(w);
+            wc.add(c);
+
+            if (dictionary.contains(convertCCListIntToArray(wc))) {
                 w = wc;
             } else {
-                result.add(dictionary.get(w));
-                dictionary.put(wc, dictionarySize++);
-                w = "" + c;
+                result.add(dictionary.get(convertCCListIntToArray(w)));
+                dictionary.add(convertCCListIntToArray(wc));
+                w.removeAll();
+                w.add(c);
             }
         }
-        if (!w.equals("")) {
-            result.add(dictionary.get(w));
+
+        if (w.getSize() > 0) {
+            result.add(dictionary.get(convertCCListIntToArray(w)));
         }
 
         return result;
@@ -49,33 +49,66 @@ public class LempelZivWelch {
      * Decompress given input using ASCII values as default dictionary.
      *
      * @param compressed list of integers forming compressed input
-     * @return string forming decompressed output
+     * @return decompressed output
      */
-    public String decompress(CCList<Integer> compressed) {
+    public int[] decompress(CCList<Integer> compressed) {
         int dictionarySize = initialDictionarySize;
-        CCMap<Integer, String> dictionary = new CCMap<>();
+        CCTrie dictionary = createBaseDictionary();
 
-        for (int i = 0; i < dictionarySize; i++) {
-            dictionary.put(i, "" + (char) i);
-        }
+        CCList<Integer> w = new CCList<>();
+        w.add(compressed.get(0));
+        CCList<Integer> result = new CCList<>();
+        result.add(compressed.get(0));
+        compressed.remove(0);
 
-        String w = "" + (char) (int) compressed.remove(0);
-        StringBuilder result = new StringBuilder(w);
         for (int k : compressed) {
-            String entry = "";
-            if (dictionary.containsKey(k)) {
-                entry = dictionary.get(k);
+            CCList<Integer> entry = new CCList<>();
+
+            if (dictionary.containsReverse(k)) {
+                entry = dictionary.getReverse(k);
             } else if (k == dictionarySize) {
-                entry = w + w.charAt(0);
+                entry = new CCList<>(w);
+                entry.add(w.get(0));
             }
 
-            result.append(entry);
-
-            dictionary.put(dictionarySize++, w + entry.charAt(0));
-
+            result.add(entry);
+            CCList<Integer> temp = new CCList<>(w);
+            temp.add(entry.get(0));
+            dictionary.add(convertCCListIntToArray(temp));
             w = entry;
         }
 
-        return result.toString();
+        return convertCCListIntToArray(result);
+    }
+
+    /**
+     * Create base dictionary for compression and decompression use.
+     *
+     * @return base dictionary
+     */
+    private CCTrie createBaseDictionary() {
+        CCTrie dictionary = new CCTrie();
+
+        for (int i = 0; i < initialDictionarySize; i++) {
+            dictionary.add(new int[]{i});
+        }
+
+        return dictionary;
+    }
+
+    /**
+     * Helper method converting list collection into int table
+     *
+     * @param list collection to be converted
+     * @return table containing the collection
+     */
+    private int[] convertCCListIntToArray(CCList<Integer> list) {
+        int[] returnArray = new int[list.getSize()];
+
+        for (int i = 0; i < list.getSize(); i++) {
+            returnArray[i] = list.get(i);
+        }
+
+        return returnArray;
     }
 }

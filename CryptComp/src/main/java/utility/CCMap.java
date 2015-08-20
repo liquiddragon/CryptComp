@@ -104,11 +104,12 @@ public class CCMap<K, V> {
     private void ensureCapacity() {
         if (size == values.length) {
             int newSize = values.length << 1;
-
             CCEntry<K, V>[] newValues = new CCEntry[newSize];
+
             for (int i = 0; i < values.length; i++) {
                 newValues[i] = values[i];
             }
+
             values = newValues;
         }
     }

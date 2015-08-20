@@ -33,8 +33,18 @@ public class CCListTest {
     public void testAddNull() {
         CCList<Integer> list = new CCList<>();
 
-        list.add(null);
+        list.add((Integer)null);
         assertEquals(1, list.getSize());
         assertNull(list.remove(0));
+    }
+
+    /**
+     * Out of bounds, high, index test
+     */
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void testIndexOutOfBoundsHigh() {
+        CCList<Integer> list = new CCList<>();
+        list.add(1);
+        list.get(1);
     }
 }
