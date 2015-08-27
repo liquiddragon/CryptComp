@@ -7,9 +7,9 @@ Minkä tahansa algoritmin voi ottaa käyttöön omaan projektiinsa kunhan ottaa 
 
 Luokka `DES.java` sisältää kaiken tarpeellisen eikä ole riippuvainen muista kuin normaaleista Javan palveluista. Luokka `LempelZivWelch.java` käyttää hyväkseen projektiin tehtyjä tietorakenteita; trie ja list. Ensimmäinen käyttää sisäisesti vielä omatekoista map kokoelmaa. Nämä voidaan ottaa mukaan projektista tai korvata Javan palveluilla. Jälkimmäisessä tapauksessa trie:n voisi korvata esimerkiksi Javan [HashMap](https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html) kokoelmalla ja list korvautuisi Javan [ArrayList](http://docs.oracle.com/javase/8/docs/api/java/util/ArrayList.html) kokoelmalla. `BitPacker.java` luokka on samanlainen kuin aiemmin mainittu `DES.java` eli sen voi ottaa käyttöön sellaisenaan.
 
-Ohjelma käyttää hyväksee joitain Javan versio kahdeksassa tulleita ominaisuuksia joten tämä täytyy ottaa huomioon luokkien käytössä tai tämän projektin kääntämisessä. Käytössä on ollut OpenJDK versio 1.8.0_45-internal. Ohjeet tämän OpenJDK:n version käytöstä Ubuntu 14.04 LTS kanssa löytyy esimerkiksi aiemmasta [MiPuz ohjelman kääntäminen](https://github.com/liquiddragon/MiPuz/blob/master/dokumentointi/ohjelmanK%C3%A4%C3%A4nt%C3%A4minen.md) dokumentaatiosta.
+Ohjelma käyttää hyväkseen joitain Javan versio kahdeksassa tulleita ominaisuuksia joten tämä täytyy ottaa huomioon luokkien käytössä tai tämän projektin kääntämisessä. Käytössä on ollut OpenJDK versio 1.8.0_45-internal. Ohjeet tämän OpenJDK:n version käytöstä Ubuntu 14.04 LTS kanssa löytyy esimerkiksi aiemmasta [MiPuz ohjelman kääntäminen](https://github.com/liquiddragon/MiPuz/blob/master/dokumentointi/ohjelmanK%C3%A4%C3%A4nt%C3%A4minen.md) dokumentaatiosta.
 
-Projektille on tehty myös yksinkertainen komentorivikäyttöliittymä jolla voi kokeilla salausta ja pakkausta. Pakkaukseen voi myös vaikuttaa muutamalla valinnalla. Komentorivikäyttöliittymä on lähinnä testausta varten eikä se välttämättä sovellu yleisempään käyttöön.
+Projektille on tehty myös yksinkertainen komentorivikäyttöliittymä jolla voi kokeilla salausta ja pakkausta. Pakkaukseen voi myös vaikuttaa muutamalla komentorivillä annettavalla valitsemella. Komentorivikäyttöliittymä on lähinnä testausta varten eikä se välttämättä sovellu yleisempään käyttöön.
 
 ## Käyttöohje
 
@@ -22,6 +22,7 @@ Projektia voi käyttää Maven:n komentorivin kautta mm. seuraavasti:
 Normaalin käytännön mukaan useampia komentoja, edellä esimerkiksi `compile` ja `test`, voi käyttää yhdellä kertaa.
 
 Normaaliin ohjelman käyttöön liittyviä komentorivivalitsimia ja niiden lyhyet kuvaukset:
+
 |Valitsin|Selitys|
 |--------|-------|
 |-dec <DES>|salaamiseen käytettävä algoritmi; vain DES on toteutettu|
@@ -64,7 +65,7 @@ Projektin pääluokkakaavio löytyy [ohesta](https://github.com/liquiddragon/Cry
  Compression sisältää toteutetun pakkausalgoritmin [Lempel-Ziv-Welch](https://en.wikipedia.org/wiki/Lempel%E2%80%93Ziv%E2%80%93Welch), joka on paranneltu Lempel-Ziv 78. Algoritmin ytimessä on pakkaus, compress, ja purku, decompress, funktiot. Molemmat luovat alussa perussanakirjan 256 ensimmäisestä ASCII merkistä. Tämän jälkeen ne käyvät läpi itse pakattavan tai purettavan tiedon joista rakentuu lopullinen sanakirja.
  Lempel-Ziv-Welch luokka käyttää sisäisenä tietorakenteenaan CCList ja CCTrie luokkia. Jälkimmäinen käyttää vielä apunaan CCMap luokkaa.
 
- Pakkaus sisältää myös toisen luokan, BitPacker, jota voidaan käyttää myös itsenäisenä osan tiivistämään sanaa, 16-bittiä, pienempiä arvoja yhteen sanaan pakkaamalla niitä bittitasolla. Esimerkiksi 10-bittisiä arvoja voitaisiin näin ollen tiivistää 8 kappaletta 5 sanaan, 8 * 10 bittiä = 80 bittiä = 5 * 16 bittiä.
+ Pakkaus sisältää myös toisen luokan, BitPacker, jota voidaan käyttää myös itsenäisenä osan tiivistämään sanaa, 16-bittiä, pienempiä arvoja yhteen sanaan pakkaamalla niitä bittitasolla. Esimerkiksi 10-bittisiä arvoja voitaisiin näin ollen tiivistää 8 kappaletta 5 sanaan, 8 kpl arvoja * 10 bittiä = 80 bittiä = 5 kpl arvoja @ 16 bittiä.
  BitPacker voidaan myös yhdistää em. LZW pakkauksen pakatun muodon jatkopakkaukseen.
 
 ### Salaus
