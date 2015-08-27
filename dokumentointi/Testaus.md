@@ -4,7 +4,7 @@
 
 Pakkauksen, sekä Lempel-Ziv-Welch että BitPacker, perustestaus on tehty JUnit yksikkötesteillä. Testit ovat itse kehitettyjä. Ne testaavat perustoiminnallisuutta ja mahdollisesti muutamia erikoistapauksia tarpeen mukaan.
 
-Suurin osa LZW:n testausta on tehty komentorivikäyttöliittymää käyttäen erilaisilla tiedostoilla. Tämä johtuu siitä että erilaisia raja-arvoihin liittyviä tapauksia ei ollut mielekästä testata yksikkkötestien kautta, koska näiden testiaineistojen koko täytyi olla tarpeeksi suuri että testaus tuli tehtyä. Esimerkiksi LZW:n 14-bittinen sanakirja kelpuuttaa 16384 merkintää sanakirjaan ennen kuin se täytyy. Näin ollen syötteen täytyisi olla huomattavasti tätä suurempi.
+Suurin osa LZW:n testausta on tehty komentorivikäyttöliittymää käyttäen erilaisilla tiedostoilla. Tämä johtuu siitä että erilaisia raja-arvoihin liittyviä tapauksia ei ollut mielekästä testata yksikkkötestien kautta, koska näiden testiaineistojen koko täytyi olla tarpeeksi suuri että testaus tuli tehtyä. Esimerkiksi LZW:n 14-bittinen sanakirja kelpuuttaa 16384 merkintää sanakirjaan ennen kuin se täytyy. Näin ollen syötteen täytyisi olla huomattavan suuri.
 
 BitPacker:n kohdalla yksikkötestit testaavat eri bittimäärien toimintaa pakkauksessa ja purussa verraten purun tulosta alkuperäiseen aineistoon. Tämä on melko suoraviivainen tapa. Lisänä on käytetty komentorivikäyttöliittymän kautta tapahtuvaa testausta.
 
@@ -55,6 +55,7 @@ Esimerkki aineistona ovat olleet muun muassa: [Cosmos](http://textfiles.com/rpg/
 
 
 **Lyhyt tekstitiedosto**
+
 |Pakkaus *)|Koko|
 |-------|----|
 |Alkuperäinen|21 B|
@@ -67,6 +68,7 @@ Esimerkki aineistona ovat olleet muun muassa: [Cosmos](http://textfiles.com/rpg/
 
 
 **OpenDocument tekstitiedosto**
+
 |Pakkaus *)|Koko|
 |-------|----|
 |Alkuperäinen|221,9 kB|
@@ -79,12 +81,13 @@ Esimerkki aineistona ovat olleet muun muassa: [Cosmos](http://textfiles.com/rpg/
 |15|307,2 kB|
 |16|584,1 kB|
 
-*Huom*: Oudolta vaikuttava testitulos pakkauksen koon kasvamisesta alkuperäiseen nähden selitty sillä että OpenDocument, vaikkakin XML-pohjainen, tallennetaan oletuksena JAR, Java Archive, muodossa, joka taas käyttää ZIP-pakkausta. Katso esimerkiksi Wikipedian artikkelia [OpenDocument technical specification](https://en.wikipedia.org/wiki/OpenDocument_technical_specification).
+*Huom*: Oudolta vaikuttava testitulos pakkauksen koon kasvamisesta alkuperäiseen nähden selittyy sillä että OpenDocument, vaikkakin XML-pohjainen, tallennetaan oletuksena JAR, Java Archive, muodossa, joka taas käyttää ZIP-pakkausta. Katso esimerkiksi Wikipedian artikkelia [OpenDocument technical specification](https://en.wikipedia.org/wiki/OpenDocument_technical_specification).
 
 *) Pakkaus sarakkeessa esiintyvä numero kertoo käytetyn sanakirjan enimmäiskoon bitteinä.
 
 
 **Testikuva, pakkaamaton bittikartta**
+
 |Pakkaus *)|Koko|
 |-------|----|
 |Alkuperäinen|6,9 MB|
@@ -107,9 +110,9 @@ DES:n testaus on tehty JUnit yksikkötesteillä joissa käytetään omien testie
 
 |Tiedosto|Aika|Huomioita|
 |--------|----|---------|
-|Lyhyt teksti, 1.7 kB|~2 ms| - |
+|Lyhyt teksti, 1.7 kB|kryptaus ja purku: ~2 ms| - |
 |Cosmos|kryptaus: ~64 ms, purku: ~83 ms| Heittely suurta joten suurimmat heitot poistettu. Syy on todennäköisimmin JVM:n sisäinen toiminta.|
-|test.bmp|~524 ms, ~587 ms| Vastaavaa heittelyä kuin Cosmoksen kanssa.|
+|test.bmp|kryptaus: ~524 ms, purku: ~587 ms| Vastaavaa heittelyä kuin Cosmoksen kanssa.|
 
 ## Kokoelmat
 
