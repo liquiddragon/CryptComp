@@ -8,7 +8,13 @@ package utility;
  */
 public class CCEntry<K, V> {
 
+    /**
+     * Key.
+     */
     private final K key;
+    /**
+     * Corresponding value.
+     */
     private V value;
 
     /**

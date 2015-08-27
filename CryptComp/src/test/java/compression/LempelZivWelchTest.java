@@ -32,6 +32,8 @@ public class LempelZivWelchTest {
 
         CCList<Integer> compressed = lz.compress(inputTable);
 
+        assertEquals(262, lz.getHighestKeyValue());
+        
         verifyCCLists(expectedOutput, compressed);
     }
 
@@ -65,6 +67,7 @@ public class LempelZivWelchTest {
     @Test
     public void testCompressionDecompression() {
         lz = new LempelZivWelch();
+        lz.setDictionarySize(9);
 
         String input = "This is a test message that might or might not compress.";
         int[] inputTable = stringToIntTable(input);
@@ -99,7 +102,7 @@ public class LempelZivWelchTest {
     }
 
     /**
-     * Compression method test.
+     * Compression method test with empty string.
      */
     @Test
     public void testCompressEmptyString() {
@@ -113,10 +116,31 @@ public class LempelZivWelchTest {
     }
 
     /**
+     * Compression method test with long repeating input.
+     */
+    @Test
+    public void testCompressLongInput() {
+        lz = new LempelZivWelch();
+        lz.setDictionarySize(9);
+        
+        String inputText = "This is a test. ";
+        StringBuilder inputBuffer = new StringBuilder();
+        for (int i = 0; i < 5000; i++) {
+            inputBuffer.append(inputText);
+        }
+
+        CCList<Integer> compressed = lz.compress(stringToIntTable(inputBuffer.toString()));
+        int[] output = lz.decompress(compressed);
+        verifyTables(stringToIntTable(inputBuffer.toString()), output);
+
+        assertEquals(5117, compressed.getSize());
+    }
+
+    /**
      * Helper method converting string to corresponding int table.
      *
      * @param inputText to be converted
-     * @return text in int table
+     * @return text in integer table
      */
     private int[] stringToIntTable(String inputText) {
         int[] inputTable = new int[inputText.length()];
@@ -129,8 +153,8 @@ public class LempelZivWelchTest {
     }
 
     /**
-     * Helper method for verifying if two int tables are equal in size and in
-     * contents.
+     * Helper method for verifying if two integer tables are equal in size and
+     * in contents.
      *
      * @param expected source being compared to
      * @param result that is compared

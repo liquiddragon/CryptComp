@@ -1,6 +1,5 @@
 package compression;
 
-import compression.BitPacker;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -90,17 +89,40 @@ public class BitPackerTest {
      */
     @Test
     public void testEnsureCorrectBitCountUsage() {
-        BitPacker bp = new BitPacker();
-        bp.maxValue(250);
+        bp = new BitPacker();
+        bp.maxValue(255);
         assertEquals(8, bp.getBitCount());
     }
 
     /**
-     * Print given int table elements as individual binary strings preceeded
+     * Border case where input is 8 bytes and packing occurs 10-bits per one
+     * word, which should yield 5 such words.
+     */
+    @Test
+    public void testEvenBit() {
+        bp = new BitPacker();
+        bp.maxValue(1000);
+
+        String testInput = "12345678";
+        int[] input = new int[testInput.length()];
+
+        for (int j = 0; j < testInput.length(); j++) {
+            input[j] = testInput.charAt(j);
+        }
+        int[] packed = bp.pack(input);
+        int[] unpacked = bp.unpack(packed, bp.packedCount());
+
+        for (int j = 0; j < input.length; j++) {
+            assertEquals(input[j], unpacked[j]);
+        }
+    }
+
+    /**
+     * Print given integer table elements as individual binary strings preceeded
      * with given message.
      *
      * @param input values to be printed
-     * @param message to be dispalyed
+     * @param message to be displayed
      */
     private void printTableWithMessage(int[] input, String message) {
         System.out.println(message);

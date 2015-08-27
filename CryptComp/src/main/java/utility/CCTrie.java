@@ -5,7 +5,13 @@ package utility;
  */
 public class CCTrie {
 
+    /**
+     * Default node child count.
+     */
     private final int nodeSpan = 256;
+    /**
+     * Value indicating no such item.
+     */
     private final int nan = -1;
 
     /**
@@ -26,9 +32,21 @@ public class CCTrie {
         }
     }
 
+    /**
+     * Root node of the trie.
+     */
     private Node root;
+    /**
+     * Element count.
+     */
     private int elementCount;
+    /**
+     * Last value used when storing an entry to trie.
+     */
     private int lastValue = 0;
+    /**
+     * Reverse look up table.
+     */
     private final CCMap<Integer, Node> reverseTable;
 
     /**
@@ -60,18 +78,18 @@ public class CCTrie {
         if (x == null) {
             x = new Node();
         }
-        
+
         if (depth == entry.length) {
             if (x.value < 0) {
                 elementCount++;
             }
-            
+
             x.value = lastValue;
             reverseTable.put(lastValue, x);
             lastValue++;
             return x;
         }
-        
+
         int c = entry[depth];
         x.next[c] = add(x.next[c], entry, depth + 1);
 
@@ -115,7 +133,7 @@ public class CCTrie {
         if (reverseTable.containsKey(value)) {
             Node last = reverseTable.get(value);
             result = new CCList<>();
-        
+
             while (last != root) {
                 result.add(last.previousValue);
                 last = last.previous;
@@ -126,7 +144,7 @@ public class CCTrie {
         if (result != null && result.getSize() > 1) {
             result.reverse();
         }
-        
+
         return result;
     }
 
@@ -142,11 +160,11 @@ public class CCTrie {
         if (x == null) {
             return null;
         }
-        
+
         if (depth == entry.length) {
             return x;
         }
-        
+
         return get(x.next[entry[depth]], entry, depth + 1);
     }
 
@@ -160,7 +178,7 @@ public class CCTrie {
         boolean result = true;
 
         Node x = get(root, entry, 0);
-        
+
         if (x == null) {
             result = false;
         }

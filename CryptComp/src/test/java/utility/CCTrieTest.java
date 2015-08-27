@@ -96,4 +96,55 @@ public class CCTrieTest {
         assertEquals(1, trie.highestKey());
     }
 
+    /**
+     * Check contains when entry exists.
+     */
+    @Test
+    public void testContainsWithExisting() {
+        trie = new CCTrie();
+        trie.add(new int[]{65});
+        trie.add(new int[]{65, 65});
+        trie.add(new int[]{65, 65, 66});
+
+        assertTrue(trie.contains(new int[]{65, 65}));
+    }
+
+    /**
+     * Check contains when entry does not exist.
+     */
+    @Test
+    public void testContainsWithNonExistingEntry() {
+        trie = new CCTrie();
+        trie.add(new int[]{65});
+        trie.add(new int[]{65, 65});
+        trie.add(new int[]{65, 65, 66});
+
+        assertFalse(trie.contains(new int[]{65, 66}));
+    }
+
+    /**
+     * Check reverse contains when entry exists.
+     */
+    @Test
+    public void testReverseContainsWithExisting() {
+        trie = new CCTrie();
+        trie.add(new int[]{65});
+        trie.add(new int[]{65, 65});
+        trie.add(new int[]{65, 65, 66});
+
+        assertTrue(trie.containsReverse(2));
+    }
+
+    /**
+     * Check reverse contains when entry does not exist.
+     */
+    @Test
+    public void testReverseContainsWithNonExistingEntry() {
+        trie = new CCTrie();
+        trie.add(new int[]{65});
+        trie.add(new int[]{65, 65});
+        trie.add(new int[]{65, 65, 66});
+
+        assertFalse(trie.containsReverse(5));
+    }
 }

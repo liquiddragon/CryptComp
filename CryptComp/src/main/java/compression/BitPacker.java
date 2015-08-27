@@ -6,9 +6,25 @@ package compression;
  */
 public class BitPacker {
 
-    private int bitCount;
+    /**
+     * Maximum bit count supported.
+     */
     private final int maxBits = 16;
+    /**
+     * Actual number of bits used.
+     */
+    private int actualBitCount;
+    /**
+     * Number of entries packed output contains.
+     */
     private int packedCount;
+
+    /**
+     * Construct BitPacker object.
+     */
+    public BitPacker() {
+        packedCount = 0;
+    }
 
     /**
      * Maximum value of the integers being packed or unpacked.
@@ -18,9 +34,9 @@ public class BitPacker {
     public void maxValue(int number) {
         int value = 1;
 
-        while (value < number) {
+        while (value <= number) {
             value <<= 1;
-            bitCount++;
+            actualBitCount++;
         }
     }
 
@@ -30,7 +46,7 @@ public class BitPacker {
      * @return bit count
      */
     public int getBitCount() {
-        return bitCount;
+        return actualBitCount;
     }
 
     /**
@@ -51,10 +67,10 @@ public class BitPacker {
 
         while (orgIndex < original.length) {
             // Handle value that fits entirely to given field
-            if (usedBits + bitCount <= maxBits) {
+            if (usedBits + actualBitCount <= maxBits) {
                 packed[packIndex] |= original[orgIndex] << leftShifter;
-                usedBits += bitCount;
-                leftShifter += bitCount;
+                usedBits += actualBitCount;
+                leftShifter += actualBitCount;
 
                 // Even bit value cases
                 if (usedBits == maxBits) {
@@ -71,8 +87,8 @@ public class BitPacker {
                 packIndex++;
                 rightShifter = (maxBits - leftShifter);
                 packed[packIndex] = original[orgIndex] >>> rightShifter;
-                usedBits = (bitCount - rightShifter);
-                leftShifter = (bitCount - rightShifter);
+                usedBits = (actualBitCount - rightShifter);
+                leftShifter = (actualBitCount - rightShifter);
             }
             orgIndex++;
         }
@@ -95,10 +111,10 @@ public class BitPacker {
      * Unpack words back to bits.
      *
      * @param packed input
-     * @param packedAmount count of entries that input contains
+     * @param packedCount count of entries that input contains
      * @return unpacked input
      */
-    public int[] unpack(int[] packed, int packedAmount) {
+    public int[] unpack(int[] packed, int packedCount) {
         int[] unpacked = new int[packed.length << 1];
 
         int packedIndex = 0;
@@ -108,12 +124,12 @@ public class BitPacker {
         int leftShifter = 0;
         int rightShifter = 0;
 
-        while (packedIndex < packedAmount) {
+        while (packedIndex < packedCount) {
             // Handle value that is contained entirely in single field
-            if (remainingBits >= bitCount) {
-                mask = (1 << bitCount) - 1;
+            if (remainingBits >= actualBitCount) {
+                mask = (1 << actualBitCount) - 1;
                 unpacked[unpackIndex] = (packed[packedIndex] >>> rightShifter) & mask;
-                remainingBits -= bitCount;
+                remainingBits -= actualBitCount;
                 rightShifter = (maxBits - remainingBits);
 
                 // Handle value that is split over two fields
@@ -124,10 +140,10 @@ public class BitPacker {
                     break;
                 }
                 leftShifter = remainingBits;
-                remainingBits = maxBits - (bitCount - (maxBits - rightShifter));
-                mask = (1 << (bitCount - (maxBits - rightShifter))) - 1;
+                remainingBits = maxBits - (actualBitCount - (maxBits - rightShifter));
+                mask = (1 << (actualBitCount - (maxBits - rightShifter))) - 1;
                 unpacked[unpackIndex] |= ((packed[packedIndex] & mask) << leftShifter);
-                rightShifter = (bitCount - leftShifter);
+                rightShifter = (actualBitCount - leftShifter);
             }
             unpackIndex++;
         }

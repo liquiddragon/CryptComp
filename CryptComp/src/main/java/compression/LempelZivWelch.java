@@ -10,7 +10,27 @@ import utility.CCTrie;
  */
 public class LempelZivWelch {
 
+    /**
+     * Dictionary default size, which varies based on set method.
+     */
+    private int maxDictionarySize = 1 << 12;
+    /**
+     * Initial dictionary size.
+     */
     private final int initialDictionarySize = 256;
+    /**
+     * Highest key value used in dictionary.
+     */
+    private int highestKeyValue;
+
+    /**
+     * Set dictionary size in bits.
+     *
+     * @param newSizeInBits dictionary size in bits
+     */
+    public void setDictionarySize(int newSizeInBits) {
+        maxDictionarySize = 1 << newSizeInBits;
+    }
 
     /**
      * Compress given input using ASCII values as default dictionary.
@@ -28,19 +48,26 @@ public class LempelZivWelch {
             CCList<Integer> wc = new CCList<>(w);
             wc.add(c);
 
-            if (dictionary.contains(convertCCListIntToArray(wc))) {
+            if (dictionary.contains(CCList.convertCCListIntToArray(wc))) {
                 w = wc;
             } else {
-                result.add(dictionary.get(convertCCListIntToArray(w)));
-                dictionary.add(convertCCListIntToArray(wc));
+                result.add(dictionary.get(CCList.convertCCListIntToArray(w)));
+
+                // Possibly artificial cap to the dictionary size as per maxDictionarySize
+                if (dictionary.highestKey() < maxDictionarySize) {
+                    dictionary.add(CCList.convertCCListIntToArray(wc));
+                }
+
                 w.removeAll();
                 w.add(c);
             }
         }
 
         if (w.getSize() > 0) {
-            result.add(dictionary.get(convertCCListIntToArray(w)));
+            result.add(dictionary.get(CCList.convertCCListIntToArray(w)));
         }
+
+        highestKeyValue = dictionary.highestKey();
 
         return result;
     }
@@ -70,15 +97,29 @@ public class LempelZivWelch {
                 entry = new CCList<>(w);
                 entry.add(w.get(0));
             }
-
             result.add(entry);
-            CCList<Integer> temp = new CCList<>(w);
-            temp.add(entry.get(0));
-            dictionary.add(convertCCListIntToArray(temp));
+
+            // Possibly artificial cap to the dictionary size as per maxDictionarySize
+            if (dictionarySize < maxDictionarySize) {
+                CCList<Integer> temp = new CCList<>(w);
+                temp.add(entry.get(0));
+                dictionary.add(CCList.convertCCListIntToArray(temp));
+                dictionarySize++;
+            }
+
             w = entry;
         }
 
-        return convertCCListIntToArray(result);
+        return CCList.convertCCListIntToArray(result);
+    }
+
+    /**
+     * Retrieve highest value used for dictionary key.
+     *
+     * @return highest used key value
+     */
+    public int getHighestKeyValue() {
+        return highestKeyValue;
     }
 
     /**
@@ -94,21 +135,5 @@ public class LempelZivWelch {
         }
 
         return dictionary;
-    }
-
-    /**
-     * Helper method converting list collection into int table
-     *
-     * @param list collection to be converted
-     * @return table containing the collection
-     */
-    private int[] convertCCListIntToArray(CCList<Integer> list) {
-        int[] returnArray = new int[list.getSize()];
-
-        for (int i = 0; i < list.getSize(); i++) {
-            returnArray[i] = list.get(i);
-        }
-
-        return returnArray;
     }
 }

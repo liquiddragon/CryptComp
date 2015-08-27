@@ -8,12 +8,28 @@ import static org.junit.Assert.*;
  */
 public class CCMapTest {
 
+    CCMap<Integer, Integer> map;
+
+    /**
+     * Ensure that size is increased properly.
+     */
+    @Test
+    public void testSizeIncrease() {
+        map = new CCMap<>();
+
+        for (int i = 0; i < 17; i++) {
+            map.put(i, 16 - i);
+        }
+
+        assertEquals(17, map.size());
+    }
+
     /**
      * Add value for same key twice.
      */
     @Test
     public void testAddSameKeyTwice() {
-        CCMap<Integer, Integer> map = new CCMap<>();
+        map = new CCMap<>();
 
         map.put(1, 10);
         map.put(1, 0);
@@ -28,7 +44,7 @@ public class CCMapTest {
      */
     @Test
     public void testAddNull() {
-        CCMap<Integer, Integer> map = new CCMap<>();
+        map = new CCMap<>();
 
         map.put(1, null);
         map.put(2, 10);
@@ -41,7 +57,7 @@ public class CCMapTest {
      */
     @Test
     public void testRemoveKVPair() {
-        CCMap<Integer, Integer> map = new CCMap<>();
+        map = new CCMap<>();
 
         map.put(1, 10);
         map.put(2, 20);
@@ -56,7 +72,7 @@ public class CCMapTest {
      */
     @Test
     public void testNonExistingRemoveKVPair() {
-        CCMap<Integer, Integer> map = new CCMap<>();
+        map = new CCMap<>();
 
         map.put(1, 10);
         map.put(2, 20);
@@ -65,4 +81,21 @@ public class CCMapTest {
 
         assertEquals(2, map.size());
     }
+
+    /**
+     * Remove key-value pair twice.
+     */
+    @Test
+    public void testRemoveKVPairTwice() {
+        map = new CCMap<>();
+
+        map.put(1, 10);
+        map.put(2, 20);
+
+        map.remove(2);
+        map.remove(2);
+
+        assertEquals(1, map.size());
+    }
+
 }

@@ -9,8 +9,17 @@ import java.util.Iterator;
  */
 public class CCList<E> implements Iterable<E> {
 
+    /**
+     * Current element count.
+     */
     private int size = 0;
+    /**
+     * Default starting capacity of the list.
+     */
     private final int DEFAULT_CAPACITY = 10;
+    /**
+     * Stored entries array.
+     */
     private Object[] elements;
 
     /**
@@ -141,9 +150,10 @@ public class CCList<E> implements Iterable<E> {
      * @param start index from which compacting starts
      */
     private void compactArray(int start) {
-        for (int i = start; i < size; i++) {
+        for (int i = start; i < elements.length - 1; i++) {
             elements[i] = elements[i + 1];
         }
+        elements[elements.length - 1] = null;
     }
 
     /**
@@ -187,5 +197,37 @@ public class CCList<E> implements Iterable<E> {
 
             return ele;
         }
+    }
+
+    /**
+     * Convert list collection into integer table
+     *
+     * @param list collection to be converted
+     * @return table containing the collection
+     */
+    public static int[] convertCCListIntToArray(CCList<Integer> list) {
+        int[] returnArray = new int[list.getSize()];
+
+        for (int i = 0; i < list.getSize(); i++) {
+            returnArray[i] = list.get(i);
+        }
+
+        return returnArray;
+    }
+
+    /**
+     * Convert integer table into list collection
+     *
+     * @param list collection to be converted
+     * @return table containing the collection
+     */
+    public static CCList<Integer> convertArrayToCCListInt(int[] list) {
+        CCList<Integer> returnList = new CCList<>();
+
+        for (int i = 0; i < list.length; i++) {
+            returnList.add(list[i]);
+        }
+
+        return returnList;
     }
 }

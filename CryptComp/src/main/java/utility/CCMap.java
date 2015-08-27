@@ -8,7 +8,13 @@ package utility;
  */
 public class CCMap<K, V> {
 
+    /**
+     * Current element count.
+     */
     private int size = 0;
+    /**
+     * Default starting capacity of the map.
+     */
     private final int DEFAULT_CAPACITY = 16;
 
     private CCEntry<K, V>[] values = new CCEntry[DEFAULT_CAPACITY];

@@ -10,15 +10,45 @@ import java.util.Arrays;
  */
 public class DES {
 
+    /**
+     * Number of bits in key.
+     */
     private final int keyBits = 56;
+    /**
+     * Feistel et al. round count.
+     */
     private final int rounds = 16;
+    /**
+     * Single block size handled at the time.
+     */
     private final int blockSize = 8;
+    /**
+     * Key size in bytes.
+     */
     private final int keySize = 8;
+    /**
+     * Storage for pre-generated encryption keys.
+     */
     private final int[] encryptKeys = new int[32];
+    /**
+     * Storage for pre-generated decryption keys.
+     */
     private final int[] decryptKeys = new int[32];
+    /**
+     * Temporary storage for handled block.
+     */
     private final int[] tempInts = new int[2];
+    /**
+     * Storage for input block when using CBC.
+     */
     private byte[] copyOfInput = new byte[blockSize];
+    /**
+     * Indicator when the first round of decryption is done when using CBC.
+     */
     private boolean skipDone = false;
+    /**
+     * Operation mode of cipher; either CBC or ECB.
+     */
     private OperationMode opMode;
 
     /**
@@ -483,11 +513,17 @@ public class DES {
         outInts[1] = leftt;
     }
 
+    /**
+     * Parity bits in key, if used or otherwise skipped.
+     */
     private static byte[] bitsInByte = {
         (byte) 0x80, (byte) 0x40, (byte) 0x20, (byte) 0x10,
         (byte) 0x08, (byte) 0x04, (byte) 0x02, (byte) 0x01
     };
 
+    /**
+     * Masks for key generation.
+     */
     private static int[] bigByteMask = {
         0x800000, 0x400000, 0x200000, 0x100000,
         0x080000, 0x040000, 0x020000, 0x010000,
@@ -497,7 +533,9 @@ public class DES {
         0x000008, 0x000004, 0x000002, 0x000001
     };
 
-    // A.k.a. key permutation
+    /**
+     * Key permutation values.
+     */
     private static byte[] permutedChoiceOne = {
         (byte) 56, (byte) 48, (byte) 40, (byte) 32, (byte) 24, (byte) 16, (byte) 8,
         (byte) 0, (byte) 57, (byte) 49, (byte) 41, (byte) 33, (byte) 25, (byte) 17,
@@ -509,7 +547,9 @@ public class DES {
         (byte) 20, (byte) 12, (byte) 4, (byte) 27, (byte) 19, (byte) 11, (byte) 3
     };
 
-    // A.k.a compression permutation
+    /**
+     * Compression permutation values.
+     */
     private static byte[] permutedChoiceTwo = {
         (byte) 13, (byte) 16, (byte) 10, (byte) 23, (byte) 0, (byte) 4,
         (byte) 2, (byte) 27, (byte) 14, (byte) 5, (byte) 20, (byte) 9,
@@ -520,11 +560,16 @@ public class DES {
         (byte) 43, (byte) 48, (byte) 38, (byte) 55, (byte) 33, (byte) 52,
         (byte) 45, (byte) 41, (byte) 49, (byte) 35, (byte) 28, (byte) 31};
 
+    /**
+     * Key rotation values.
+     */
     private static int[] originalKeyRotation = {
         1, 2, 4, 6, 8, 10, 12, 14, 15, 17, 19, 21, 23, 25, 27, 28
     };
 
-    // S-boxes
+    /**
+     * S-Box 1.
+     */
     private static int[] SBox1 = {
         0x01010400, 0x00000000, 0x00010000, 0x01010404,
         0x01010004, 0x00010404, 0x00000004, 0x00010000,
@@ -544,6 +589,9 @@ public class DES {
         0x00010004, 0x00010400, 0x00000000, 0x01010004
     };
 
+    /**
+     * S-Box 2.
+     */
     private static int[] SBox2 = {
         0x80108020, 0x80008000, 0x00008000, 0x00108020,
         0x00100000, 0x00000020, 0x80100020, 0x80008020,
@@ -563,6 +611,9 @@ public class DES {
         0x80000000, 0x80100020, 0x80108020, 0x00108000
     };
 
+    /**
+     * S-Box 3.
+     */
     private static int[] SBox3 = {
         0x00000208, 0x08020200, 0x00000000, 0x08020008,
         0x08000200, 0x00000000, 0x00020208, 0x08000200,
@@ -582,6 +633,9 @@ public class DES {
         0x00020208, 0x00000008, 0x08020008, 0x00020200
     };
 
+    /**
+     * S-Box 4.
+     */
     private static int[] SBox4 = {
         0x00802001, 0x00002081, 0x00002081, 0x00000080,
         0x00802080, 0x00800081, 0x00800001, 0x00002001,
@@ -601,6 +655,9 @@ public class DES {
         0x00000080, 0x00800000, 0x00002000, 0x00802080
     };
 
+    /**
+     * S-Box 5.
+     */
     private static int[] SBox5 = {
         0x00000100, 0x02080100, 0x02080000, 0x42000100,
         0x00080000, 0x00000100, 0x40000000, 0x02080000,
@@ -620,6 +677,9 @@ public class DES {
         0x00000000, 0x40080000, 0x02080100, 0x40000100
     };
 
+    /**
+     * S-Box 6.
+     */
     private static int[] SBox6 = {
         0x20000010, 0x20400000, 0x00004000, 0x20404010,
         0x20400000, 0x00000010, 0x20404010, 0x00400000,
@@ -639,6 +699,9 @@ public class DES {
         0x20404000, 0x20000000, 0x00400010, 0x20004010
     };
 
+    /**
+     * S-Box 7.
+     */
     private static int[] SBox7 = {
         0x00200000, 0x04200002, 0x04000802, 0x00000000,
         0x00000800, 0x04000802, 0x00200802, 0x04200800,
@@ -658,6 +721,9 @@ public class DES {
         0x04000002, 0x04000800, 0x00000800, 0x00200002
     };
 
+    /**
+     * S-Box 8.
+     */
     private static int[] SBox8 = {
         0x10001040, 0x00001000, 0x00040000, 0x10041040,
         0x10000000, 0x10001040, 0x00000040, 0x10000000,

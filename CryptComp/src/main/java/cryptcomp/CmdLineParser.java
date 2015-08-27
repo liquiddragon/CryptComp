@@ -31,6 +31,22 @@ public class CmdLineParser {
          */
         DEC("dec"),
         /**
+         * Pack.
+         */
+        PACK("pack"),
+        /**
+         * Unpack.
+         */
+        UNPACK("unpack"),
+        /**
+         * Omit bit packer
+         */
+        NOBIT("nobit"),
+        /**
+         * Dictionary size in bits
+         */
+        DICTSIZE("dictsize"),
+        /**
          * Key used for en/decryption.
          */
         KEY("key"),
@@ -101,14 +117,22 @@ public class CmdLineParser {
      * Add options for command line parse.
      */
     private void addOptions() {
-        Option encrypterOpt = Option.builder("enc").hasArg().argName("DES").desc("encrypter to be used").build();
-        Option decrypterOpt = Option.builder("dec").hasArg().argName("DES").desc("decrypter to be used").build();
-        Option keyOpt = Option.builder("key").hasArg().argName("en/decryption key").desc("key").build();
-        Option inFileOpt = Option.builder("infile").hasArg().argName("name").desc("filename").build();
-        Option outFileOpt = Option.builder("outfile").hasArg().argName("name").desc("filename").build();
+        Option encrypterOpt = Option.builder(CCOptions.ENC.getOption()).hasArg().argName("DES").desc("encrypter to be used").build();
+        Option decrypterOpt = Option.builder(CCOptions.DEC.getOption()).hasArg().argName("DES").desc("decrypter to be used").build();
+        Option packOpt = Option.builder(CCOptions.PACK.getOption()).desc("pack input").build();
+        Option unpackOpt = Option.builder(CCOptions.UNPACK.getOption()).desc("unpack input").build();
+        Option noBitOpt = Option.builder(CCOptions.NOBIT.getOption()).desc("omit bit packing").build();
+        Option dictSizeOpt = Option.builder(CCOptions.DICTSIZE.getOption()).hasArg().argName("SIZE").desc("dictionary size for compression, value between 9 and 16 inclusive").build();
+        Option keyOpt = Option.builder(CCOptions.KEY.getOption()).hasArg().argName("en/decryption key").desc("key").build();
+        Option inFileOpt = Option.builder(CCOptions.INFILE.getOption()).hasArg().argName("name").desc("filename").build();
+        Option outFileOpt = Option.builder(CCOptions.OUTFILE.getOption()).hasArg().argName("name").desc("filename").build();
 
         options.addOption(encrypterOpt);
         options.addOption(decrypterOpt);
+        options.addOption(packOpt);
+        options.addOption(unpackOpt);
+        options.addOption(noBitOpt);
+        options.addOption(dictSizeOpt);
         options.addOption(keyOpt);
         options.addOption(inFileOpt);
         options.addOption(outFileOpt);
@@ -145,7 +169,7 @@ public class CmdLineParser {
      */
     public void showUsage() {
         HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp("CyrptComp", options);
+        formatter.printHelp("CryptComp", options);
     }
 
     /**
