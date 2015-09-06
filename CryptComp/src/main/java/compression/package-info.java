@@ -1,4 +1,4 @@
 /**
- * Compression classes.
+ * Compression related classes.
  */
 package compression;

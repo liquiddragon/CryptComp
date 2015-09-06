@@ -23,7 +23,14 @@ import utility.CCList;
  */
 public class Main {
 
+    /**
+     * Size of biggest value in word using 16-bits.
+     */
     private static final int WORD_LIMIT = 65536;
+    /**
+     * Show timing for main operations.
+     */
+    private static boolean timingVisible = false;
 
     /**
      * Standard starting function for the application.
@@ -33,7 +40,7 @@ public class Main {
     public static void main(String[] args) {
         String key = null;
 
-        /* Quick and dirty command line interface for en/decrypt class. This
+        /* Quick and dirty command line interface for project. This
          * has not been tested much and it might or might not work as expected.
          */
         CmdLineParser cmdParser = new CmdLineParser();
@@ -42,6 +49,7 @@ public class Main {
             return;
         }
 
+        // Cryptography key handling
         if (cmdParser.hasOption(CmdLineParser.CCOptions.ENC.getOption())
                 && cmdParser.getOption(CmdLineParser.CCOptions.ENC.getOption()).equalsIgnoreCase(CmdLineParser.CCCryptoAlgo.DES.getAlgo())
                 || cmdParser.hasOption(CmdLineParser.CCOptions.DEC.getOption())
@@ -60,6 +68,7 @@ public class Main {
             }
         }
 
+        // Input related stream name retrieval
         String inFile = null;
         String outFile = null;
         if (cmdParser.hasOption(CmdLineParser.CCOptions.INFILE.getOption())) {
@@ -72,6 +81,7 @@ public class Main {
             }
         }
 
+        // Output related stream name retrieval
         if (cmdParser.hasOption(CmdLineParser.CCOptions.OUTFILE.getOption())) {
             outFile = cmdParser.getOption(CmdLineParser.CCOptions.OUTFILE.getOption());
 
@@ -85,6 +95,7 @@ public class Main {
         DataInputStream dis = null;
         DataOutputStream dos = null;
 
+        // Input stream opening and wrapping for buffered data input stream
         if (inFile == null) {
             dis = new DataInputStream(new BufferedInputStream(System.in));
         } else {
@@ -97,6 +108,7 @@ public class Main {
             }
         }
 
+        // Output stream wrapping for buffered data output stream
         if (outFile == null) {
             dos = new DataOutputStream(new BufferedOutputStream(System.out));
         } else {
@@ -114,18 +126,26 @@ public class Main {
             }
         }
 
+        // Enable operation timing printing
+        if (cmdParser.hasOption(CmdLineParser.CCOptions.SHOWTIME.getOption())) {
+            timingVisible = true;
+        }
+
+        // Handle encryption
         if (cmdParser.hasOption(CmdLineParser.CCOptions.ENC.getOption())
                 && cmdParser.getOption(CmdLineParser.CCOptions.ENC.getOption()).equalsIgnoreCase(CmdLineParser.CCCryptoAlgo.DES.getAlgo())) {
             encryptDES(key, dis, dos);
+            // Handle decryption
         } else if (cmdParser.hasOption(CmdLineParser.CCOptions.DEC.getOption())
                 && cmdParser.getOption(CmdLineParser.CCOptions.DEC.getOption()).equalsIgnoreCase(CmdLineParser.CCCryptoAlgo.DES.getAlgo())) {
             decryptDES(key, dis, dos);
+            // Handle packing
         } else if (cmdParser.hasOption(CmdLineParser.CCOptions.PACK.getOption())) {
             boolean bitPacking = true;
             if (cmdParser.hasOption(CmdLineParser.CCOptions.NOBIT.getOption())) {
                 bitPacking = false;
             }
-            int dictSize = 12;
+            int dictSize = 12; // Default dictionary size
             if (cmdParser.hasOption(CmdLineParser.CCOptions.DICTSIZE.getOption())) {
                 int value = Integer.parseInt(cmdParser.getOption(CmdLineParser.CCOptions.DICTSIZE.getOption()));
                 if (value >= 9 && value <= 16) {
@@ -133,12 +153,13 @@ public class Main {
                 }
             }
             pack(dis, dos, bitPacking, dictSize);
+            // Handle unpacking
         } else if (cmdParser.hasOption(CmdLineParser.CCOptions.UNPACK.getOption())) {
             boolean bitPacking = true;
             if (cmdParser.hasOption(CmdLineParser.CCOptions.NOBIT.getOption())) {
                 bitPacking = false;
             }
-            int dictSize = 12;
+            int dictSize = 12; // Default dictionary size
             if (cmdParser.hasOption(CmdLineParser.CCOptions.DICTSIZE.getOption())) {
                 int value = Integer.parseInt(cmdParser.getOption(CmdLineParser.CCOptions.DICTSIZE.getOption()));
                 if (value >= 9 && value <= 16) {
@@ -148,13 +169,21 @@ public class Main {
             unpack(dis, dos, bitPacking, dictSize);
         }
 
+        // Close input stream
         if (dis != null) {
             try {
                 dis.close();
             } catch (IOException ioe) {
+                try {
+                    dos.close();
+                } catch (IOException ex) {
+                    System.out.println(ioe.getMessage());
+                }
                 System.out.println(ioe.getMessage());
             }
         }
+
+        // Close output stream
         if (dos != null) {
             try {
                 dos.close();
@@ -178,7 +207,8 @@ public class Main {
         cp.setEndOfFile(false);
         DES des = new DES(key);
 
-        long alku = System.currentTimeMillis();
+        long startTime = System.currentTimeMillis();
+
         do {
             cp.setTextBuffer(new byte[blockSize]);
             readBlock(cp, dis, des);
@@ -186,9 +216,12 @@ public class Main {
             des.encryptBlock(cp.getTextBuffer(), 0, cipherText, 0, DES.OperationMode.ECB);
             writeBlock(cipherText, dos);
         } while (cp.isEndOfFile() == false);
-        long loppu = System.currentTimeMillis();
-        
-        System.out.println("Aika: " + (loppu-alku) + " ms");
+
+        long endTime = System.currentTimeMillis();
+
+        if (timingVisible) {
+            System.out.println("Encryption time: " + (endTime - startTime) + " ms (including file operations)");
+        }
     }
 
     /**
@@ -205,7 +238,8 @@ public class Main {
         cp.setEndOfFile(false);
         DES des = new DES(key);
 
-        long alku = System.currentTimeMillis();
+        long startTime = System.currentTimeMillis();
+
         do {
             cp.setTextBuffer(new byte[blockSize]);
             readBlock(cp, dis, des);
@@ -215,9 +249,12 @@ public class Main {
                 writeBlock(des.removePadding(clearText), dos);
             }
         } while (cp.isEndOfFile() == false);
-        long loppu = System.currentTimeMillis();
-        
-        System.out.println("Aika: " + (loppu-alku) + " ms");
+
+        long endTime = System.currentTimeMillis();
+
+        if (timingVisible) {
+            System.out.println("Decryption time: " + (endTime - startTime) + " ms (including file operations)");
+        }
     }
 
     /**
@@ -281,6 +318,9 @@ public class Main {
      * @param dictSize dictionary size when compressing data
      */
     private static void pack(DataInputStream dis, DataOutputStream dos, boolean bitPacking, int dictSize) {
+        long startTime;
+        long endTime;
+
         try {
             int size = dis.available();
             byte[] input = new byte[size];
@@ -292,7 +332,13 @@ public class Main {
             dis.read(input, 0, size);
             int[] inputBuffer = convertByteToInt(input);
 
+            startTime = System.currentTimeMillis();
             packed = lzw.compress(inputBuffer);
+            endTime = System.currentTimeMillis();
+
+            if (timingVisible) {
+                System.out.println("Compression time: " + (endTime - startTime) + " ms");
+            }
 
             // Prepare for optional bit packing
             int[] finalPacked;
@@ -302,7 +348,14 @@ public class Main {
 
             if (bitPacking) {
                 bp.maxValue(highValue);
+
+                startTime = System.currentTimeMillis();
                 finalPacked = bp.pack(CCList.convertCCListIntToArray(packed));
+                endTime = System.currentTimeMillis();
+
+                if (timingVisible) {
+                    System.out.println("Bit packing time: " + (endTime - startTime) + " ms");
+                }
                 writeValue = bp.packedCount();
             } else {
                 finalPacked = CCList.convertCCListIntToArray(packed);
@@ -337,6 +390,9 @@ public class Main {
      * @param dictSize dictionary size when decompressing data
      */
     private static void unpack(DataInputStream dis, DataOutputStream dos, boolean bitPacking, int dictSize) {
+        long startTime;
+        long endTime;
+
         try {
             CCList<Integer> packed = new CCList<>();
             LempelZivWelch lzw = new LempelZivWelch();
@@ -360,11 +416,24 @@ public class Main {
             if (bitPacking) {
                 BitPacker bp = new BitPacker();
                 bp.maxValue(cHeader.getHighestValue());
+
+                startTime = System.currentTimeMillis();
                 int[] unbitted = bp.unpack(CCList.convertCCListIntToArray(packed), cHeader.getPackedCount());
+                endTime = System.currentTimeMillis();
+
+                if (timingVisible) {
+                    System.out.println("Bit unpacking time: " + (endTime - startTime) + " ms");
+                }
                 packed = CCList.convertArrayToCCListInt(unbitted);
             }
 
+            startTime = System.currentTimeMillis();
             int[] unpacked = lzw.decompress(packed);
+            endTime = System.currentTimeMillis();
+
+            if (timingVisible) {
+                System.out.println("Decompression time: " + (endTime - startTime) + " ms");
+            }
 
             int unpackCount = countUsage(unpacked);
 

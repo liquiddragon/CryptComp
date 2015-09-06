@@ -57,7 +57,11 @@ public class CmdLineParser {
         /**
          * Output file or STDOUT if missing.
          */
-        OUTFILE("outfile");
+        OUTFILE("outfile"),
+        /**
+         * Show time usage.
+         */
+        SHOWTIME("timing");
 
         private final String optionName;
 
@@ -101,7 +105,13 @@ public class CmdLineParser {
         }
     }
 
+    /**
+     * Options that this program can handle.
+     */
     private final Options options;
+    /**
+     * Parsed command line.
+     */
     private CommandLine cmdLine;
 
     /**
@@ -114,7 +124,7 @@ public class CmdLineParser {
     }
 
     /**
-     * Add options for command line parse.
+     * Add options for command line parser.
      */
     private void addOptions() {
         Option encrypterOpt = Option.builder(CCOptions.ENC.getOption()).hasArg().argName("DES").desc("encrypter to be used").build();
@@ -126,6 +136,7 @@ public class CmdLineParser {
         Option keyOpt = Option.builder(CCOptions.KEY.getOption()).hasArg().argName("en/decryption key").desc("key").build();
         Option inFileOpt = Option.builder(CCOptions.INFILE.getOption()).hasArg().argName("name").desc("filename").build();
         Option outFileOpt = Option.builder(CCOptions.OUTFILE.getOption()).hasArg().argName("name").desc("filename").build();
+        Option timingOpt = Option.builder(CCOptions.SHOWTIME.getOption()).desc("show time used for main operations").build();
 
         options.addOption(encrypterOpt);
         options.addOption(decrypterOpt);
@@ -136,6 +147,7 @@ public class CmdLineParser {
         options.addOption(keyOpt);
         options.addOption(inFileOpt);
         options.addOption(outFileOpt);
+        options.addOption(timingOpt);
     }
 
     /**

@@ -9,10 +9,25 @@ import java.io.IOException;
  */
 public class CompressHeader {
 
+    /**
+     * Mark for binary packed file.
+     */
     private final int BPACKED = 55;
+    /**
+     * Mark for file without binary packing.
+     */
     private final int BUNPACKED = 00;
+    /**
+     * Byte indicating whether binary packing has been done or not.
+     */
     private byte bitPacked;
+    /**
+     * Number of packed elements.
+     */
     private int packedCount;
+    /**
+     * Highest value used in dictionary.
+     */
     private int highestValue;
 
     /**
@@ -86,13 +101,13 @@ public class CompressHeader {
 
     /**
      * Retrieve count of packed entries.
-     * 
+     *
      * @return packed count
      */
     public int getPackedCount() {
         return packedCount;
     }
-    
+
     /**
      * Retrieve highest used value in the stream.
      *

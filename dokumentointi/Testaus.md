@@ -102,6 +102,12 @@ Esimerkki aineistona ovat olleet muun muassa: [Cosmos](http://textfiles.com/rpg/
 
 *) Pakkaus sarakkeessa esiintyvä numero kertoo käytetyn sanakirjan enimmäiskoon bitteinä.
 
+### Testauksen tuloksista
+
+Bittipakkaus tuo selvän hyödyn lähes kaikkeen pakkaukseen verrattuna ilman sitä tehtyyn pakkaukseen. Tulos on helposti ymmärrettävä sillä esimerkiksi jos sanakirjan suurin arvo mahtuu 9-bittiin on selvää että nämä pakattuna 16-bittisiin sanoihin tuovat paremman tuloksen kuin kirjoitettuna sellaisenaan 16-bittisinä sanoina. Nopeuden osalta bittipakkaukseen kuluva aika on lähes olematon. Esimerkiksi 10 testiajoa Cosmos.txt tiedostolla 12-bitin sanakirjalla tuotti bittipakkaukseen kuluvan keskimääräisesti vain n. 2,6%. kokonaisajasta. Kokonaisaika testiajoilla oli 3323 ms ja tästä vain 85 ms kului bittipakkaukseen.
+
+Sanakirjan koon kanssa suuremmilla aineistoilla 15-bittinen näytti lähes poikkeuksetta tuovan parhaan tuloksen. Poikkeuksena oli OpenDocument joka oli jo itsessään pakkattu. Pienemmilä tiedoistoilla vastaavaa hyötyä ei tullut. Tämäkin on suhteellisen helppo ymmärtää sillä suuren sanakirjan kohdalla saadaan aikaiseksi pidempiä jaksoja joita voidaan korvata yhdellä vakiomittaisella numerolla useamman sijaan. Aikaa ja muistia kuluu toki enemmän sillä sanakirja pitää luoda sekä purussa että pakkauksessa sillä sitä ei talleteta varsinaiseen tiedostoon. Suurempi sanakirja kuluttaa myös enemmän muistia.
+
 ## Salaus
 
 DES:n testaus on tehty JUnit yksikkötesteillä joissa käytetään omien testien lisäksi myös Javan sisäänrakennetun DES:n toiminnallisuutta varmentamaan omatekoisen toteutuksen toimivuus kolmannen osapuolten toteutusta vasten. Näiden lisäksi on tehty myös lisätestejä komentorivikäyttöliittymän kautta.
@@ -114,8 +120,12 @@ DES:n testaus on tehty JUnit yksikkötesteillä joissa käytetään omien testie
 |Cosmos|kryptaus: ~64 ms, purku: ~83 ms| Heittely suurta joten suurimmat heitot poistettu. Syy on todennäköisimmin JVM:n sisäinen toiminta.|
 |test.bmp|kryptaus: ~524 ms, purku: ~587 ms| Vastaavaa heittelyä kuin Cosmoksen kanssa.|
 
+### Salauksen tuloksista
+
+DES on hyvin standardoitu salain joten sen toimintaan ei voi hirveästi vaikuttaa esimerkiksi lisätyllä muistin käytöllä p.l. että tieto on valmiiksi muistissa sen sijaan että se luetaan lohko kerrallaan.
+
 ## Kokoelmat
 
 Kokoelmien testaus on tehty JUnit yksikkötesteillä. Testit ovat itse kehitettyjä. Pääpaino on ollut testata niitä toiminnallisuuden osia jotka eivät tulleet testatuksi muiden luokkien puolesta jotka käyttävät näitä kokoelmia.
 
-
+Kokoelmia ei ole testattu erikseen esimerkiksi muistin tai nopeuden suhteen.

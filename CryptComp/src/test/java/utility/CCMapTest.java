@@ -98,4 +98,19 @@ public class CCMapTest {
         assertEquals(1, map.size());
     }
 
+    /**
+     * Try to access removed key-value pair
+     */
+    @Test
+    public void testLateAccessToRemovedKVPair() {
+        map = new CCMap<>();
+
+        map.put(1, 10);
+        map.put(2, 20);
+
+        map.remove(2);
+
+        assertFalse(map.containsKey(2));
+    }
+
 }

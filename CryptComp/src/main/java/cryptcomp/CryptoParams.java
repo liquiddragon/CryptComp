@@ -1,13 +1,26 @@
 package cryptcomp;
 
 /**
- * Command line usage parameters for en/decrypt use.
+ * Command line usage parameters for en/decrypt use. Default getter and setter
+ * methods for values.
  */
 public class CryptoParams {
 
+    /**
+     * Whether end of file has been reached.
+     */
     private boolean endOfFile;
+    /**
+     * Buffer holding 'text' being handled.
+     */
     private byte[] textBuffer;
+    /**
+     * Block size for cryptography.
+     */
     private int blockSize;
+    /**
+     * Number of bytes being handled.
+     */
     private int readCount;
 
     public boolean isEndOfFile() {
