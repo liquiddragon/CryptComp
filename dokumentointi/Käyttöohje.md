@@ -25,10 +25,11 @@ Normaaliin ohjelman käyttöön liittyviä komentorivivalitsimia ja niiden lyhye
 | | |
 |-infile <name>|salattava, pakattava tai purettava tiedosto lukua varten|
 |-outfile <name>|tiedosto minne tulos talletetaan|
+|-timing|pääoperaation ajankulutus|
 
 *Huomioitavaa:*
 - Älä yhdistä salaukseen (`dec`, `enc` & `key`) ja pakkaukseen (`pack`, `unpack`, `nobit` ja `dictsize`) liittyviä valitsimia.
-- `infile` ja `outfile` toimivat molempien, salauksen ja pakkauksen, kanssa.
+- `infile`, `outfile` ja `timing` toimivat molempien, salauksen ja pakkauksen, kanssa.
 - Ole huolellinen käyttämiesi valitsinten ja niiden arvojen kanssa. Esimerkiksi `dictsize` täytyy olla sama pakkaamisessa ja purussa mikäli haluaa puretun tiedoston täsmäävän alkuperäisen kanssa.
 - Virheentarkistukset ovat minimissään joten tarkista käyttämäsi valitsimet, tiedostoihin mahdollisesti liittyvät polut & oikeudet ja lue mahdolliset virheilmoitukset huolellisesti.
 - Pidä mielessä että komentorivikäyttöliittymä ei ole tämän projektin pääasiallinen tarkoitus joten sen toimivuudesta virheettömästi ei ole mitään takeita.
@@ -51,13 +52,13 @@ Luokkien [Javadoc](https://github.com/liquiddragon/CryptComp/tree/master/dokumen
 #### Salaus
 
 1. Luo luokka ja aseta käytettävä avain joko merkkijonona tai tavuina. Esim. `DES des = new DES("salasana")`
-2. Valinnainen: vaihda oletuksena käytetty [CBC](https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#Cipher_Block_Chaining_.28CBC.29) [ECB](https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#Electronic_Codebook_.28ECB.29). `des.setOperationMode(DES.OperationMode.ECB)`
+2. Valinnainen: vaihda oletuksena käytetty [CBC](https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#Cipher_Block_Chaining_.28CBC.29):n [ECB](https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#Electronic_Codebook_.28ECB.29):n. `des.setOperationMode(DES.OperationMode.ECB)`
 3. Suorita salaus. `byte[] output = des.encrypt(input)`
 
 #### Salauksen purku
 
 1. Luo luokka ja aseta käytettävä avain joko merkkijonona tai tavuina. `DES des = new DES("salasana")`
-2. Valinnainen: vaihda oletuksena käytetty [CBC](https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#Cipher_Block_Chaining_.28CBC.29) [ECB](https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#Electronic_Codebook_.28ECB.29). `des.setOperationMode(DES.OperationMode.ECB)`
+2. Valinnainen: vaihda oletuksena käytetty [CBC](https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#Cipher_Block_Chaining_.28CBC.29):n [ECB](https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#Electronic_Codebook_.28ECB.29):n. `des.setOperationMode(DES.OperationMode.ECB)`
 3. Suorita salauksen purku. `byte[] output = des.decrypt(input)`
 
 ### Pakkaus
@@ -86,4 +87,4 @@ Luokkien [Javadoc](https://github.com/liquiddragon/CryptComp/tree/master/dokumen
 
 ### Muut luokat
 
-Kokoelmat ovat melko suoraviivaisia käyttää joten niiden käyttö pitäisi selvitä Javadoc:sta.
+Kokoelmat ovat melko suoraviivaisia käyttää joten niiden käyttö pitäisi selvitä [Javadoc](https://github.com/liquiddragon/CryptComp/edit/master/dokumentointi/javadoc):sta.
